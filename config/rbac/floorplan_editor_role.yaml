@@ -1,0 +1,24 @@
+# permissions for end users to edit floorplans.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: floorplan-editor-role
+rules:
+- apiGroups:
+  - metrics.console.redhat.com
+  resources:
+  - floorplans
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - metrics.console.redhat.com
+  resources:
+  - floorplans/status
+  verbs:
+  - get
