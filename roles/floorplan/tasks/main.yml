@@ -44,11 +44,11 @@
       apiVersion: batch/v1
       kind: CronJob
       metadata:
-        name: '{{ ansible_operator_meta.name }}-exporter'
+        name: 'floorist-{{ ansible_operator_meta.name }}-exporter'
         namespace: '{{ ansible_operator_meta.namespace }}'
         labels:
           app: '{{ ansible_operator_meta.name }}-floorist'
-          pod: '{{ ansible_operator_meta.name }}-exporter'
+          pod: 'floorist-{{ ansible_operator_meta.name }}-exporter'
           service: floorist
       spec:
         concurrencyPolicy: Forbid
@@ -58,11 +58,11 @@
         suspend: "{{ suspend }}"
         jobTemplate:
           metadata:
-            name: '{{ ansible_operator_meta.name }}-exporter'
+            name: 'floorist-{{ ansible_operator_meta.name }}-exporter'
             namespace: '{{ ansible_operator_meta.namespace }}'
             labels:
               app: '{{ ansible_operator_meta.name }}-floorist'
-              pod: '{{ ansible_operator_meta.name }}-exporter'
+              pod: 'floorist-{{ ansible_operator_meta.name }}-exporter'
               service: floorist
           spec:
             template:
@@ -129,7 +129,7 @@
                     periodSeconds: 10
                     successThreshold: 1
                     timeoutSeconds: 1
-                  name: '{{ ansible_operator_meta.name }}-exporter'
+                  name: 'floorist-{{ ansible_operator_meta.name }}-exporter'
                   ports:
                   - containerPort: 9000
                     name: metrics
