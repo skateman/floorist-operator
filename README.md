@@ -85,7 +85,7 @@ spec:
     secretName: # name of the database secret
   objectStore:
     secretName: # name of the k8s secret with S3 credentials
-  suspend: # option to suspend cronjobs (true by default)
+  suspend: # option to suspend cronjobs (false by default)
   logLevel: # optional Python log level (default INFO)
 ```
 
