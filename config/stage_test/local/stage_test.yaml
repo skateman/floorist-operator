@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stage-test
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: stage-test-service-account
+      containers:
+        - image: controller:latest
+          name: floorist-operator-stage-test
+          imagePullPolicy: Always
+          command:
+            - sh
+          args:
+            - stage_test.sh
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi

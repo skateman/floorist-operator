@@ -1,0 +1,3 @@
+- op: replace
+  path: /metadata/name
+  value: floorist-operator-stage-test-${IMAGE_TAG}

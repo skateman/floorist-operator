@@ -1,0 +1,17 @@
+namespace: floorist-operator-system
+
+resources:
+- ./local
+
+images:
+- name: quay.io/cloudservices/floorist-operator
+  newName: ${IMAGE}
+  newTag: ${IMAGE_TAG}
+
+patches:
+- path: test_params.config.yaml
+  target:
+    group: batch
+    kind: Job
+    name: stage-test
+    version: v1

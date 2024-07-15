@@ -2,8 +2,8 @@
 
 require 'yaml'
 
-if ARGV[0].nil?
-  puts "Usage: #{$0} parameters.yaml"
+if ARGV[0].nil? || ARGV[1].nil?
+  puts "Usage: #{$PROGRAM_NAME} parameters.yaml name_of_template"
   exit 1
 end
 
@@ -14,7 +14,7 @@ template = {
   'apiVersion' => 'v1',
   'kind' => 'Template',
   'metadata' => {
-    'name' => 'floorist-operator'
+    'name' => ARGV[1]
   },
   'objects' => objects,
   'parameters' => parameters
