@@ -7,7 +7,7 @@ USER root
 RUN dnf -y upgrade && \
     dnf -y clean all
 
-RUN curl -v --output oc.tar.gz \
+RUN curl -L --output oc.tar.gz \
  https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/latest/openshift-client-linux-amd64-rhel8.tar.gz && \
  tar -xvf oc.tar.gz oc && \
  mv oc /usr/local/bin/ && \
