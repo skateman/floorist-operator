@@ -1,13 +1,9 @@
 - op: replace
   path: /spec/template/spec/containers/0/image
   value: ${IMAGE}:${IMAGE_TAG}
-- op: add
-  path: /spec/template/spec/containers/0/env/-
-  value:
-    name: FLOORIST_IMAGE
-    value: "${FLOORIST_IMAGE}"
-- op: add
-  path: /spec/template/spec/containers/0/env/-
-  value:
-    name: FLOORIST_IMAGE_TAG
-    value: "${FLOORIST_IMAGE_TAG}"
+- op: replace
+  path: /spec/template/spec/containers/0/env/1/value
+  value: "${FLOORIST_IMAGE}"
+- op: replace
+  path: /spec/template/spec/containers/0/env/2/value
+  value: "${FLOORIST_IMAGE_TAG}"
