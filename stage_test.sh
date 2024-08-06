@@ -1,16 +1,18 @@
 #!/bin/bash
 
-CRONJOBS=$(oc get cronjobs -l "service=floorist" --all-namespaces | awk 'NR>1 {print $1}')
+NAMESPACED_CRONJOBS=$(oc get cronjobs -l "service=floorist" \
+                     -o jsonpath='{range .items[*]}{.metadata.namespace}:{.metadata.name}{"\n"}{end}' --all-namespaces)
 
-if [[ -z "$CRONJOBS" ]]; then
+if [[ -z "$NAMESPACED_CRONJOBS" ]]; then
     echo "ERROR: no cronjobs found"
     exit 1
 fi
 
-for CRONJOB in $CRONJOBS; do
-    NAMESPACE=$(oc get cronjob $CRONJOB -o jsonpath='{.metadata.namespace}' --all-namespaces)
+for NAMESPACED_CRONJOB in $NAMESPACED_CRONJOBS; do
+    NAMESPACE=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $1}')
+    CRONJOB=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $2}')
 
-    SUCCESS=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{.items[].status.succeeded}{"\n"}' -n $NAMESPACE)
+    SUCCESS=$(oc get job -l "pod=$CRONJOB" -o jsonpath='{..succeeded}{"\n"}' -n $NAMESPACE)
 
     if [[ -z "$SUCCESS" ]]; then
         echo "ERROR: cronjob $CRONJOB has not created any jobs in namespace $NAMESPACE"
