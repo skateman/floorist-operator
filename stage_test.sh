@@ -12,11 +12,11 @@ echo "----------------- Cronjobs found -----------------"
 echo "$NAMESPACED_CRONJOBS"
 echo "--------------------------------------------------"
 
-for NAMESPACED_CRONJOB in $NAMESPACED_CRONJOBS; do
-    NAMESPACE=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $1}')
-    CRONJOB=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $2}')
+for NAMESPACED_CRONJOB in "$NAMESPACED_CRONJOBS"; do
+    NAMESPACE=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $1}')
+    CRONJOB=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $2}')
 
-    SUCCESS=$(oc get job -l "pod=$CRONJOB" -o jsonpath='{..succeeded}{"\n"}' -n $NAMESPACE)
+    SUCCESS=$(oc get job -l "pod=$CRONJOB" -o jsonpath='{..succeeded}{"\n"}' -n "$NAMESPACE")
 
     if [[ -z "$SUCCESS" ]]; then
         echo "ERROR: cronjob $CRONJOB has not created any jobs in namespace $NAMESPACE"
