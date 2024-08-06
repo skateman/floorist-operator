@@ -8,6 +8,10 @@ if [[ -z "$NAMESPACED_CRONJOBS" ]]; then
     exit 1
 fi
 
+echo "----------------- Cronjobs found -----------------"
+echo "$NAMESPACED_CRONJOBS"
+echo "--------------------------------------------------"
+
 for NAMESPACED_CRONJOB in $NAMESPACED_CRONJOBS; do
     NAMESPACE=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $1}')
     CRONJOB=$(echo $NAMESPACED_CRONJOB | awk -F ':' '{print $2}')
