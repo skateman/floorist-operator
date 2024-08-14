@@ -12,7 +12,7 @@ echo "----------------- Cronjobs found -----------------"
 echo "$NAMESPACED_CRONJOBS"
 echo "--------------------------------------------------"
 
-for NAMESPACED_CRONJOB in "$NAMESPACED_CRONJOBS"; do
+while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
     NAMESPACE=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $1}')
     CRONJOB=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $2}')
 
@@ -27,4 +27,4 @@ for NAMESPACED_CRONJOB in "$NAMESPACED_CRONJOBS"; do
         echo "ERROR: cronjob $CRONJOB has not created successful jobs in namespace $NAMESPACE"
         exit 1
     fi
-done
+done <<< "$NAMESPACED_CRONJOBS"
