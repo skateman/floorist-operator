@@ -15,3 +15,6 @@ patches:
     kind: Job
     name: stage-test
     version: v1
+
+patchesStrategicMerge:
+- clusterrole_patch.yaml
