@@ -2,9 +2,9 @@
 
 # New Floorist image used by the operator
 NEW_FLOORIST_IMG="$(
-    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE")].value}{"\n"}' -n floorist-operator-system
+    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE")].value}{"\n"}'
 ):$(
-    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE_TAG")].value}{"\n"}' -n floorist-operator-system
+    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE_TAG")].value}{"\n"}'
 )"
 
 NAMESPACED_CRONJOBS=$(oc get cronjobs -l "service=floorist" \
