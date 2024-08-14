@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# New Floorist image used by the operator
+NEW_FLOORIST_IMG="$(
+    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE")].value}{"\n"}' -n floorist-operator-system
+):$(
+    oc get deployment.apps -o jsonpath='{.items[?(.metadata.name=="floorist-operator-controller-manager")].spec.template.spec.containers[?(.name=="manager")].env[?(.name=="FLOORIST_IMAGE_TAG")].value}{"\n"}' -n floorist-operator-system
+)"
+
 NAMESPACED_CRONJOBS=$(oc get cronjobs -l "service=floorist" \
                      -o jsonpath='{range .items[*]}{.metadata.namespace}:{.metadata.name}{"\n"}{end}' --all-namespaces)
 
@@ -27,4 +34,14 @@ while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
         echo "ERROR: cronjob $CRONJOB has not created successful jobs in namespace $NAMESPACE"
         exit 1
     fi
-done <<< "$NAMESPACED_CRONJOBS"
+
+    # Comparing operator's image with the image used by the (cron)jobs
+    JOB_IMAGE=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{..image}{"\n"}' -n $NAMESPACE)
+
+    if [[ "$NEW_FLOORIST_IMG" != "$JOB_IMAGE" ]]; then
+        echo "ERROR: cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
+        echo "Operator's image: $NEW_FLOORIST_IMG"
+        echo "Image used by the cronjob: $JOB_IMAGE"
+        exit 1
+    fi
+done  <<< "$NAMESPACED_CRONJOBS"
