@@ -23,7 +23,7 @@ while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
     NAMESPACE=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $1}')
     CRONJOB=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $2}')
 
-    SUCCESS=$(oc get job -l "pod=$CRONJOB" -o jsonpath='{..succeeded}{"\n"}' -n "$NAMESPACE")
+    SUCCESS=$(oc get job -l "pod=$CRONJOB" -o jsonpath='{range .items[*]}{..succeeded}{"\n"}{end}' -n "$NAMESPACE")
 
     if [[ -z "$SUCCESS" ]]; then
         echo "ERROR: cronjob $CRONJOB has not created any jobs in namespace $NAMESPACE"
@@ -36,7 +36,7 @@ while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
     fi
 
     # Comparing operator's image with the image used by the (cron)jobs
-    JOB_IMAGE=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{..image}{"\n"}' -n $NAMESPACE)
+    JOB_IMAGE=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{range .items[*]}{..image}{"\n"}{end}' -n $NAMESPACE)
 
     if [[ "$NEW_FLOORIST_IMG" != "$JOB_IMAGE" ]]; then
         echo "ERROR: cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
