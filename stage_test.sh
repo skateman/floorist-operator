@@ -19,7 +19,11 @@ echo "----------------- Cronjobs found -----------------"
 echo "$NAMESPACED_CRONJOBS"
 echo "--------------------------------------------------"
 
-while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
+# Setting IFS to newline to split multiline strings into arrays
+IFS=$'\n'
+
+NAMESPACED_CRONJOBS=($NAMESPACED_CRONJOBS)
+for NAMESPACED_CRONJOB in "${NAMESPACED_CRONJOBS[@]}"; do
     NAMESPACE=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $1}')
     CRONJOB=$(echo "$NAMESPACED_CRONJOB" | awk -F ':' '{print $2}')
 
@@ -30,18 +34,24 @@ while IFS=$'\n' read -r NAMESPACED_CRONJOB; do
         exit 1
     fi
 
-    if [[ "$SUCCESS" != "1" ]]; then
-        echo "ERROR: cronjob $CRONJOB has not created successful jobs in namespace $NAMESPACE"
-        exit 1
-    fi
+    SUCCESS=($SUCCESS)
+    for SUCCESS_BOOLEAN in "${SUCCESS[@]}"; do
+        if [[ "$SUCCESS_BOOLEAN" != "1" ]]; then
+            echo "ERROR: cronjob $CRONJOB has a failed run in namespace $NAMESPACE"
+            exit 1
+        fi
+    done
 
     # Comparing operator's image with the image used by the (cron)jobs
-    JOB_IMAGE=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{range .items[*]}{..image}{"\n"}{end}' -n $NAMESPACE)
+    JOB_IMAGES=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{range .items[*]}{..image}{"\n"}{end}' -n $NAMESPACE)
+    JOB_IMAGES=($JOB_IMAGES)
 
-    if [[ "$NEW_FLOORIST_IMG" != "$JOB_IMAGE" ]]; then
-        echo "ERROR: cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
-        echo "Operator's image: $NEW_FLOORIST_IMG"
-        echo "Image used by the cronjob: $JOB_IMAGE"
-        exit 1
-    fi
-done  <<< "$NAMESPACED_CRONJOBS"
+    for JOB_IMAGE in "${JOB_IMAGES[@]}"; do
+        if [[ "$NEW_FLOORIST_IMG" != "$JOB_IMAGE" ]]; then
+            echo "ERROR: cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
+            echo "Operator's image: $NEW_FLOORIST_IMG"
+            echo "Image used by the cronjob: $JOB_IMAGE"
+            exit 1
+        fi
+    done
+done
