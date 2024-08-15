@@ -42,16 +42,14 @@ for NAMESPACED_CRONJOB in "${NAMESPACED_CRONJOBS[@]}"; do
         fi
     done
 
-    # Comparing operator's image with the image used by the (cron)jobs
-    JOB_IMAGES=$(oc get job -l "pod=${CRONJOB}" -o jsonpath='{range .items[*]}{..image}{"\n"}{end}' -n $NAMESPACE)
-    JOB_IMAGES=($JOB_IMAGES)
+    # Comparing operator's image with the image used by the newest job
+    LATEST_JOB_IMAGE=$(oc get job -l "pod=${CRONJOB}" --sort-by=.metadata.creationTimestamp -o \
+                        jsonpath='{.items[-1].spec.template.spec.containers[].image}{"\n"}' -n $NAMESPACE)
 
-    for JOB_IMAGE in "${JOB_IMAGES[@]}"; do
-        if [[ "$NEW_FLOORIST_IMG" != "$JOB_IMAGE" ]]; then
-            echo "ERROR: cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
-            echo "Operator's image: $NEW_FLOORIST_IMG"
-            echo "Image used by the cronjob: $JOB_IMAGE"
-            exit 1
-        fi
-    done
+    if [[ "$NEW_FLOORIST_IMG" != "$LATEST_JOB_IMAGE" ]]; then
+        echo "ERROR: newest job of cronjob $CRONJOB in namespace $NAMESPACE is not configured with the newest Floorist image"
+        echo "Operator's image: $NEW_FLOORIST_IMG"
+        echo "Image used by the latest job: $LATEST_JOB_IMAGE"
+        exit 1
+    fi
 done
