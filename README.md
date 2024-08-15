@@ -242,4 +242,4 @@ If you'd like to see the test pass:
   1. [install the operator](#installation)
   2. set up the [test environment](#test-environment)
   3. create a [sample cronjob](#trying-it-out) and be sure to manually trigger a job
-  4. deploy the test using one of the commands above
+  4. deploy the test in the namespace `floorist-operator-system` using one of the commands above
