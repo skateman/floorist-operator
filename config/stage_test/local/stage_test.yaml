@@ -17,8 +17,9 @@ spec:
           args:
             - stage_test.sh
           resources:
-            requests:
-              memory: 256Mi
-              cpu: 200m
             limits:
+              cpu: 200m
               memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi

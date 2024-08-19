@@ -55,9 +55,10 @@ objects:
           name: floorist-operator-stage-test
           resources:
             limits:
+              cpu: 200m
               memory: 512Mi
             requests:
-              cpu: 200m
+              cpu: 100m
               memory: 256Mi
         restartPolicy: Never
         serviceAccountName: floorist-operator-stage-test-service-account
