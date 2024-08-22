@@ -15,7 +15,7 @@ MANAGER_TIMESTAMP=$(
 
 NAMESPACED_CRONJOBS=$(
     oc get cronjobs -l "service=floorist" -o \
-    jsonpath='{range .items[*]}{.metadata.namespace};{.metadata.name}{"\n"}{end}' --all-namespaces
+    jsonpath='{range .items[*]}{.metadata.namespace};{.metadata.name};{.spec.suspend}{"\n"}{end}' --all-namespaces
 )
 
 if [[ -z "$NAMESPACED_CRONJOBS" ]]; then
@@ -24,7 +24,7 @@ if [[ -z "$NAMESPACED_CRONJOBS" ]]; then
 fi
 
 echo "----------------- Cronjobs found -----------------"
-echo "$NAMESPACED_CRONJOBS"
+echo "$(echo "$NAMESPACED_CRONJOBS" | cut -d ';' -f 1,2)"
 echo "--------------------------------------------------"
 
 # Setting IFS to newline to split multiline strings into arrays
@@ -34,6 +34,12 @@ NAMESPACED_CRONJOBS=($NAMESPACED_CRONJOBS)
 for NAMESPACED_CRONJOB in "${NAMESPACED_CRONJOBS[@]}"; do
     NAMESPACE=$(echo "$NAMESPACED_CRONJOB" | cut -d ";" -f 1)
     CRONJOB=$(echo "$NAMESPACED_CRONJOB" | cut -d ";" -f 2)
+
+    # Skipping suspended cronjobs
+    if [[ "$(echo "$NAMESPACED_CRONJOB" | cut -d ";" -f 3)" == "true" ]]; then
+        echo "INFO: cronjob $CRONJOB is suspended in namespace $NAMESPACE"
+        continue
+    fi
 
     JOBS=$(oc get jobs -l "pod=$CRONJOB" -o jsonpath='{range .items[*]}{.status.succeeded};{.metadata.name}{"\n"}{end}' -n "$NAMESPACE")
 
