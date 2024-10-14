@@ -35,7 +35,7 @@ spec:
             secretKeyRef:
               key: bucket
               name: minio-access
-        image: docker.io/minio/mc
+        image: quay.io/minio/mc
         name: createbucket
         command:
           - /bin/bash
