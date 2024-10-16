@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v1.35.0
+FROM registry.redhat.io/openshift4/ose-ansible-rhel9-operator:v4.17
 
 COPY .baseimagedigest ${HOME}
 
